@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<title>Ankieta satysfakcji</title>
+<style>
+  :root {
+    --accent: #ff9800;
+    --accent-dark: #e68900;
+    --text: #2b2b2b;
+    --muted: #6b6b6b;
+    --bg: #f7f7f8;
+    --card: #ffffff;
+    --border: #e2e2e4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px 16px 60px;
+  }
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    color: var(--muted);
+    margin-bottom: 28px;
+    font-size: 0.95rem;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card h2 {
+    font-size: 1.05rem;
+    margin: 0 0 14px;
+  }
+  .stars {
+    display: flex;
+    gap: 6px;
+    font-size: 2rem;
+    user-select: none;
+    margin-bottom: 6px;
+  }
+  .stars span {
+    cursor: pointer;
+    color: #d9d9d9;
+    transition: color 0.15s, transform 0.1s;
+  }
+  .stars span.active {
+    color: var(--accent);
+  }
+  .stars span:hover {
+    transform: scale(1.1);
+  }
+  .star-label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  textarea, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 70px;
+    background: #fff;
+  }
+  select {
+    min-height: unset;
+    height: 42px;
+  }
+  .hidden {
+    display: none;
+  }
+  .extra-field {
+    margin-top: 12px;
+  }
+  .extra-field label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  label.field-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin: 14px 0 6px;
+  }
+  label.field-label:first-child { margin-top: 0; }
+  button {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  button:hover { background: var(--accent-dark); }
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  #thankyou {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  #thankyou h2 {
+    font-size: 1.4rem;
+  }
+  .error {
+    color: #c0392b;
+    font-size: 0.85rem;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="formWrap">
+  <h1>Ankieta satysfakcji</h1>
+  <div class="subtitle">Twoja opinia pomaga nam się rozwijać. Zajmie to około minuty.</div>
+
+  <form id="surveyForm">
+
+    <!-- Pytanie 1 -->
+    <div class="card">
+      <h2>1. Jak ogólnie oceniasz swoje doświadczenie i satysfakcję z treningów w naszym studiu?</h2>
+      <div class="stars" id="stars1"></div>
+      <div class="star-label" id="starsLabel1">Wybierz ocenę (1 = słabo, 5 = ekstra gwiazdki)</div>
+      <div id="lowScoreField" class="extra-field hidden">
+        <label for="komentarzNiskaOcena">Co konkretnie nie spełniło Twoich oczekiwań? (opcjonalnie, ale bardzo pomocne)</label>
+        <textarea id="komentarzNiskaOcena" placeholder="Napisz, co się nie udało..."></textarea>
+      </div>
+    </div>
+
+    <!-- Pytanie 2 -->
+    <div class="card">
+      <h2>2. Czy jest coś, co moglibyśmy poprawić, aby treningi lub obsługa były jeszcze lepsze?</h2>
+      <textarea id="copoprawic" placeholder="Twoja odpowiedź..."></textarea>
+    </div>
+
+    <!-- Pytanie 3 -->
+    <div class="card">
+      <h2>3. Jak oceniasz współpracę z Twoim trenerem?</h2>
+
+      <label class="field-label" for="trener">Wybierz trenera</label>
+      <select id="trener" required>
+        <option value="" disabled selected>-- wybierz --</option>
+      </select>
+
+      <label class="field-label">Ocena współpracy</label>
+      <div class="stars" id="stars3"></div>
+      <div class="star-label" id="starsLabel3">Wybierz ocenę 1-5</div>
+
+      <label class="field-label" for="komentarzTrener">Co robi bardzo dobrze, a nad czym Twoim zdaniem mógłby jeszcze popracować?</label>
+      <textarea id="komentarzTrener" placeholder="Twoja odpowiedź..."></textarea>
+    </div>
+
+    <button type="submit" id="submitBtn">Wyślij ankietę</button>
+    <div class="error hidden" id="formError">Uzupełnij ocenę ogólną, wybierz trenera i oceń współpracę przed wysłaniem.</div>
+  </form>
+</div>
+
+<div class="wrap hidden" id="thankyou">
+  <h2>Dziękujemy za wypełnienie ankiety! 🙌</h2>
+  <p>Twoja opinia została zapisana.</p>
+</div>
+
+<script>
+  let ocenaOgolna = 0;
+  let ocenaTrenera = 0;
+
+  function buildStars(containerId, onSelect) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const s = document.createElement('span');
+      s.textContent = '★';
+      s.dataset.value = i;
+      s.addEventListener('click', () => onSelect(i));
+      container.appendChild(s);
+    }
+  }
+
+  function paintStars(containerId, value) {
+    const stars = document.querySelectorAll('#' + containerId + ' span');
+    stars.forEach(s => {
+      s.classList.toggle('active', Number(s.dataset.value) <= value);
+    });
+  }
+
+  buildStars('stars1', (v) => {
+    ocenaOgolna = v;
+    paintStars('stars1', v);
+    document.getElementById('starsLabel1').textContent = 'Twoja ocena: ' + v + '/5';
+    const lowField = document.getElementById('lowScoreField');
+    if (v <= 2) {
+      lowField.classList.remove('hidden');
+    } else {
+      lowField.classList.add('hidden');
+      document.getElementById('komentarzNiskaOcena').value = '';
+    }
+  });
+
+  buildStars('stars3', (v) => {
+    ocenaTrenera = v;
+    paintStars('stars3', v);
+    document.getElementById('starsLabel3').textContent = 'Twoja ocena: ' + v + '/5';
+  });
+
+  // Wypełnienie listy trenerów z backendu
+  google.script.run.withSuccessHandler(function(trenerzy) {
+    const select = document.getElementById('trener');
+    trenerzy.forEach(function(t) {
+      const opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t;
+      select.appendChild(opt);
+    });
+  }).getTrenerzy();
+
+  document.getElementById('surveyForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const trener = document.getElementById('trener').value;
+    const errorBox = document.getElementById('formError');
+
+    if (ocenaOgolna === 0 || !trener || ocenaTrenera === 0) {
+      errorBox.classList.remove('hidden');
+      return;
+    }
+    errorBox.classList.add('hidden');
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Wysyłanie...';
+
+    const data = {
+      ocenaOgolna: ocenaOgolna,
+      komentarzNiskaOcena: document.getElementById('komentarzNiskaOcena').value,
+      copoprawic: document.getElementById('copoprawic').value,
+      trener: trener,
+      ocenaTrenera: ocenaTrenera,
+      komentarzTrener: document.getElementById('komentarzTrener').value
+    };
+
+    google.script.run
+      .withSuccessHandler(function() {
+        document.getElementById('formWrap').classList.add('hidden');
+        document.getElementById('thankyou').classList.remove('hidden');
+      })
+      .withFailureHandler(function(err) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Wyślij ankietę';
+        alert('Wystąpił błąd podczas wysyłania: ' + err.message);
+      })
+      .saveResponse(data);
+  });
+</script>
+</body>
+</html>
