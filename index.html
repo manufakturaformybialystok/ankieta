@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<base target="_top">
 <meta charset="UTF-8">
 <title>Ankieta satysfakcji</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   :root {
     --accent: #ff9800;
@@ -166,6 +166,12 @@
       <label class="field-label" for="trener">Wybierz trenera</label>
       <select id="trener" required>
         <option value="" disabled selected>-- wybierz --</option>
+        <option value="Tomek">Tomek</option>
+        <option value="Oliwia">Oliwia</option>
+        <option value="Wiktor">Wiktor</option>
+        <option value="Klaudia">Klaudia</option>
+        <option value="Lena">Lena</option>
+        <option value="Hubert">Hubert</option>
       </select>
 
       <label class="field-label">Ocena współpracy</label>
@@ -187,6 +193,10 @@
 </div>
 
 <script>
+  // === TU WKLEJ SWÓJ ADRES WDROŻENIA APPS SCRIPT ===
+  // Deploy -> New deployment -> Web app -> skopiuj adres kończący się na /exec
+  const SCRIPT_URL = 'https://script.google.com/macros/s/TWOJ_DEPLOYMENT_ID/exec';
+
   let ocenaOgolna = 0;
   let ocenaTrenera = 0;
 
@@ -228,17 +238,6 @@
     document.getElementById('starsLabel3').textContent = 'Twoja ocena: ' + v + '/5';
   });
 
-  // Wypełnienie listy trenerów z backendu
-  google.script.run.withSuccessHandler(function(trenerzy) {
-    const select = document.getElementById('trener');
-    trenerzy.forEach(function(t) {
-      const opt = document.createElement('option');
-      opt.value = t;
-      opt.textContent = t;
-      select.appendChild(opt);
-    });
-  }).getTrenerzy();
-
   document.getElementById('surveyForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -264,17 +263,25 @@
       komentarzTrener: document.getElementById('komentarzTrener').value
     };
 
-    google.script.run
-      .withSuccessHandler(function() {
+    // 'no-cors' + text/plain: Apps Script nie obsługuje CORS-preflight (OPTIONS),
+    // więc unikamy go w ten sposób. Nie możemy odczytać odpowiedzi serwera,
+    // ale jeśli fetch się nie wywali, przyjmujemy że dane dotarły.
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(data)
+    })
+      .then(function() {
         document.getElementById('formWrap').classList.add('hidden');
         document.getElementById('thankyou').classList.remove('hidden');
       })
-      .withFailureHandler(function(err) {
+      .catch(function(err) {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Wyślij ankietę';
-        alert('Wystąpił błąd podczas wysyłania: ' + err.message);
-      })
-      .saveResponse(data);
+        alert('Wystąpił błąd podczas wysyłania. Spróbuj ponownie.');
+        console.error(err);
+      });
   });
 </script>
 </body>
